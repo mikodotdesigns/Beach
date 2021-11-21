@@ -10,6 +10,12 @@ public class BasicMovement : MonoBehaviour
     private Vector2 facingRight;
     BoxCollider2D bcol;
     SpriteRenderer spriterender;
+    public float jumpForce;
+
+    private float jumpTimeCounter;
+    public float jumpTime;
+
+    private bool isJumping;
 
     private void Awake()
     {
@@ -24,9 +30,30 @@ public class BasicMovement : MonoBehaviour
     {
         body.velocity = new Vector2(Input.GetAxis("Horizontal") * speed, body.velocity.y);
 
-        if(IsGrounded() && Input.GetKey(KeyCode.Space)){
-            body.velocity = new Vector2(body.velocity.x, speed);
+        if(IsGrounded() && Input.GetKeyDown(KeyCode.Space)){
+            isJumping = true;
+            jumpTimeCounter = jumpTime;
+            body.velocity = new Vector2(body.velocity.x, speed) * jumpForce;
         }
+
+        if(Input.GetKeyUp(KeyCode.Space)){
+            isJumping = false;
+        }
+
+
+        //GetKey to check if it's continually held
+        if(Input.GetKey(KeyCode.Space)) {
+            if(jumpTimeCounter > 0) {
+                 body.velocity = new Vector2(body.velocity.x, speed) * jumpForce;
+                 jumpTimeCounter -= Time.deltaTime;
+            } else {
+                isJumping = false;
+            }
+           
+        }
+
+
+        //Transforms for directional animation
 
           if(Input.GetKey(KeyCode.A)){
             animator.SetBool("running", true);
